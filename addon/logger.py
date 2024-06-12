@@ -1,5 +1,9 @@
 import logging
-from PyQt5.QtCore import pyqtSignal, QObject
+
+try:
+    from PyQt6.QtCore import pyqtSignal, QObject
+except:
+    from PyQt5.QtCore import pyqtSignal, QObject
 
 
 class Handler(QObject, logging.Handler):

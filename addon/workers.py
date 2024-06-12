@@ -6,9 +6,12 @@ from itertools import chain
 from .misc import ThreadPool
 from requests.adapters import HTTPAdapter
 from .constants import VERSION, VERSION_CHECK_API
-from PyQt5.QtCore import QObject, pyqtSignal, QThread
-import aqt
-import os
+
+try:
+    from PyQt6.QtCore import QObject, pyqtSignal, QThread
+except:
+    from PyQt5.QtCore import QObject, pyqtSignal, QThread
+
 
 class VersionCheckWorker(QObject):
     haveNewVersion = pyqtSignal(str, str)
@@ -151,9 +154,6 @@ class AudioDownloadWorker(QObject):
                         if chunk:
                             f.write(chunk)
                 self.logger.info(f'{fileName} 下载完成')
-                aqt.mw.col.media.add_file(fileName)
-                os.remove(fileName)
-                self.logger.info(f"{fileName} 添加到媒体库,临时文件已删除")
             except Exception as e:
                 self.logger.warning(f'下载{fileName}:{url}异常: {e}')
             finally:

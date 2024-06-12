@@ -1,10 +1,23 @@
 import json
 import sys
 import logging
-from PyQt5.QtCore import QUrl, pyqtSignal
+
+
+try:
+    from PyQt6.QtCore import QUrl, pyqtSignal
+except:
+    from PyQt5.QtCore import QUrl, pyqtSignal
 from .UIForm import loginDialog
-from PyQt5.QtWidgets import QDialog
-from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile
+
+try:from PyQt6.QtWidgets import QDialog
+except:from PyQt5.QtWidgets import QDialog
+
+try:
+    from PyQt6.QtWebEngineWidgets import QWebEngineView
+    from PyQt6.QtWebEngineCore import QWebEngineProfile # 🐞
+    print("Shige >>> Import QWebEngineProfile Success")
+except:
+    from PyQt5.QtWebEngineWidgets import QWebEngineView, QWebEngineProfile
 
 logger = logging.getLogger('dict2Anki')
 
@@ -53,7 +66,7 @@ class LoginWebEngineView(QWebEngineView):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # 绑定cookie被添加的信号槽
-        self.profile = QWebEngineProfile.defaultProfile()
+        self.profile = QWebEngineProfile.defaultProfile() # 🐞
         self.profile.setHttpUserAgent(
             'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_13_6) AppleWebKit/537.36 (KHTML, like Gecko)'
             ' Chrome/69.0.3497.100 Safari/537.36'
@@ -62,6 +75,7 @@ class LoginWebEngineView(QWebEngineView):
         self.cookieStore.cookieAdded.connect(self.onCookieAdd)
         self._cookies = {}
         self.show()
+        print("Shige >>> run QWebEngineProfile Success")
 
     def onCookieAdd(self, cookie):
         name = cookie.name().data().decode('utf-8')

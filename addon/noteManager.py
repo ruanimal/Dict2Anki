@@ -6,7 +6,7 @@ try:
     from aqt import mw
     import anki
 except ImportError:
-    from test.dummy_aqt import mw
+    from test.dummy_aqt import mw # type:ignore
     from test import dummy_anki as anki
 
 
@@ -15,11 +15,15 @@ def getDeckList():
 
 
 def getWordsByDeck(deckName) -> [str]:
-    notes = mw.col.findNotes(f'deck:"{deckName}"')
+    # notes = mw.col.findNotes(f'deck:"{deckName}"')
+    notes = mw.col.find_notes(f'deck:"{deckName}"')
     words = []
     for nid in notes:
-        note = mw.col.getNote(nid)
-        if note.model().get('name', '').lower().startswith('dict2anki') and note['term']:
+        # note = mw.col.getNote(nid)
+        note = mw.col.get_note(nid)
+        # if note.model().get('name', '').lower().startswith('dict2anki') and note['term']:
+        if note.note_type().get('name', '').lower().startswith('dict2anki') and note['term']:
+
             words.append(note['term'])
     return words
 
@@ -27,7 +31,8 @@ def getWordsByDeck(deckName) -> [str]:
 def getNotes(wordList, deckName) -> list:
     notes = []
     for word in wordList:
-        note = mw.col.findNotes(f'deck:"{deckName}" term:"{word}"')
+        # note = mw.col.findNotes(f'deck:"{deckName}" term:"{word}"')
+        note = mw.col.find_notes(f'deck:"{deckName}" term:"{word}"')
         if note:
             notes.append(note[0])
     return notes
@@ -38,7 +43,8 @@ def getOrCreateDeck(deckName, model):
     deck = mw.col.decks.get(deck_id)
     mw.col.decks.select(deck['id'])
     mw.col.decks.save(deck)
-    mw.col.models.setCurrent(model)
+    # mw.col.models.setCurrent(model)
+    mw.col.models.set_current(model)
     model['did'] = deck['id']
     mw.col.models.save(model)
     mw.col.reset()
@@ -47,7 +53,8 @@ def getOrCreateDeck(deckName, model):
 
 
 def getOrCreateModel(modelName):
-    model = mw.col.models.byName(modelName)
+    # model = mw.col.models.byName(modelName)
+    model = mw.col.models.by_name(modelName)
     if model:
         if set([f['name'] for f in model['flds']]) == set(MODEL_FIELDS):
             return model
@@ -58,7 +65,8 @@ def getOrCreateModel(modelName):
     logger.info(f'创建新模版:{modelName}')
     newModel = mw.col.models.new(modelName)
     for field in MODEL_FIELDS:
-        mw.col.models.addField(newModel, mw.col.models.newField(field))
+        # mw.col.models.addField(newModel, mw.col.models.newField(field))
+        mw.col.models.addField(newModel, mw.col.models.new_field(field))
     return newModel
 
 
@@ -67,7 +75,8 @@ def getOrCreateModelCardTemplate(modelObject, cardTemplateName):
     existingCardTemplate = modelObject['tmpls']
     if cardTemplateName in [t.get('name') for t in existingCardTemplate]:
         return
-    cardTemplate = mw.col.models.newTemplate(cardTemplateName)
+    # cardTemplate = mw.col.models.newTemplate(cardTemplateName)
+    cardTemplate = mw.col.models.new_template(cardTemplateName)
     cardTemplate['qfmt'] = '''
         <table>
             <tr>
